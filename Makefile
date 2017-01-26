@@ -1,5 +1,7 @@
-SWIFTSOURCE=~/swift-source
+SWIFTSOURCE=../swift-source
 TOOLCHAIN_NAME=jp.ez-net.local.swift
+TOOLCHAIN_DIST=./toolchains
+LINUXSWIFT=swift-nightly-install
 TIMEBIN=/usr/bin/time -f "\n\nTime: %E ([h:]m:s)\nUser: %U s\nSystem: %S s\nElapsed: %E s\nCPU %P\nPagefaults: major %F + minor %R\nSwaps: %W\n"
 BUILDSCRIPT=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-script
 BUILDTOOLCHAIN=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-toolchain
@@ -27,7 +29,9 @@ toolchain:
 
 toolchain-move:
 	@echo Moving Swift Toolchain.
-	@find ${SWIFTSOURCE}/swift -type f -name 'swift-LOCAL-*.tar.gz' -exec mv {} ./toolchains \;
+	@mkdir -p ${TOOLCHAIN_DIST}
+	@find ${SWIFTSOURCE}/swift -type f -name 'swift-LOCAL-*.tar.gz' -exec mv -f {} ${TOOLCHAIN_DIST}/ \;
 	@echo Moving Swift Nightly Install
-	@find ${SWIFTSOURCE}/swift -type d -name 'swift-nightly-install' -exec mv {} . \;
+	@rm -rf ./${LINUXSWIFT}
+	@mv -f ${SWIFTSOURCE}/swift/${LINUXSWIFT} ./
 
