@@ -6,12 +6,18 @@ DIST_DEBUG=~/swift-source/build/Ninja-DebugAssert
 SWIFT_DIST_DEBUG=${DIST_DEBUG}/swift-linux-x86_64/bin
 SWIFTPM_DIST_DEBUG=${DIST_DEBUG}/swiftpm-linux-x86_64/debug
 
-TIMEBIN=/usr/bin/time -f "\n\nTime: %E ([h:]m:s)\nUser: %U s\nSystem: %S s\nElapsed: %E s\nCPU %P\nPagefaults: major %F + minor %R\nSwaps: %W\n"
 BUILDSCRIPT=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-script
 BUILDTOOLCHAIN=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-toolchain
-OPTIONS_DEBUG=--skip-ios --skip-tvos --skip-watchos
+OPTIONS_DEBUG=--debug-swift --debug-llvm --debug-lldb --debug-foundation --debug-libdispatch --debug-libicu --skip-ios --skip-tvos --skip-watchos --skip-build-freebsd --skip-build-cygwin --skip-build-osx --skip-build-ios --skip-build-tvos --skip-build-watchos --skip-build-android --skip-build-benchmarks
 OPTIONS_RELEASE=-R
 OPTIONS_SWIFTPM=--swiftpm --llbuild --xctest
+OPTIONS_XCODE=-x --skip-build
+
+ifeq ($(shell uname -s), Darwin)
+TIMEBIN=/usr/bin/time
+else
+TIMEBIN=/usr/bin/time -f "\n\nTime: %E ([h:]m:s)\nUser: %U s\nSystem: %S s\nElapsed: %E s\nCPU %P\nPagefaults: major %F + minor %R\nSwaps: %W\n"
+endif
 
 swift:
 	${BUILDSCRIPT} ${OPTIONS_DEBUG}
@@ -26,7 +32,7 @@ release:
 	${BUILDSCRIPT} ${OPTIONS_RELEASE} -t
 
 xcode:
-	${BUILDSCRIPT} -x
+	${BUILDSCRIPT} ${OPTIONS_XCODE}
 
 toolchain:
 	${BUILDTOOLCHAIN} ${TOOLCHAIN_NAME}
@@ -39,6 +45,15 @@ toolchain-move:
 	@echo Moving Swift Nightly Install
 	@rm -rf ./${LINUXSWIFT}
 	@mv -f ${SWIFTSOURCE}/swift/${LINUXSWIFT} ./
+
+#foundation:
+#	${BUILDSCRIPT} --foundation --lldb ${OPTIONS_DEBUG}
+
+#libdispatch:
+#	${BUILDSCRIPT} --libdispatch ${OPTIONS_DEBUG}
+
+#playground:
+#	${BUILDSCRIPT} --playgroundlogger --playgroundsupport ${OPTIONS_DEBUG}
 
 swiftpm:
 	${BUILDSCRIPT} ${OPTIONS_SWIFTPM} ${OPTIONS_DEBUG}
