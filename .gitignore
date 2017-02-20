@@ -1,3 +1,5 @@
 /swift-nightly-install
 /toolchains
+/swift-test
+.nfs.*
 

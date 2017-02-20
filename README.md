@@ -1,7 +1,10 @@
 # Layout
 
-* ./swift-source (Swift OpenSource)
 * ./swift-make (This Project)
+	* toolchains
+	* swift-nightly-install
+* ./swift-source (Swift OpenSource)
+* ./swift-test (Test codes for Swift)
 
 # How to use
 
