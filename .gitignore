@@ -2,4 +2,6 @@
 /toolchains
 /swift-test
 .nfs.*
+.DS_Store
+._*
 
