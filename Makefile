@@ -76,3 +76,6 @@ swiftpm-distribute:
 document:
 	make -C ${SWIFT_DOCDIR} singlehtml
 
+swift-init:
+	./scripts/swift-init.sh "${SWIFTSOURCE}"
+

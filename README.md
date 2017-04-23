@@ -8,9 +8,21 @@
 
 # How to use
 
-```
-cd ./swift-make
+## Clone
 
+```
+make swift-init
+```
+
+## Update
+
+```
+make update-repositories
+```
+
+## Build
+
+```
 make
 ```
 
@@ -28,5 +40,5 @@ make
 	* generate Xcode Project for Swift.
 * make swiftpm
 	* build Swift Package Manager
-
-
+* make swift-init
+	* clone the swift source (for start)
