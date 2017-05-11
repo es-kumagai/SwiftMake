@@ -10,6 +10,7 @@ SWIFT_DOCDIR=${SWIFTSOURCE}/swift/docs
 BUILDSCRIPT=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-script
 UPDATESCRIPT=${SWIFTSOURCE}/swift/utils/update-checkout
 BUILDTOOLCHAIN=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-toolchain
+OPTIONS_LIBS=--foundation --libdispatch --xctest
 OPTIONS_DEBUG=--debug-swift --debug-llvm --debug-lldb --debug-foundation --debug-libdispatch --debug-libicu --skip-ios --skip-tvos --skip-watchos --skip-build-freebsd --skip-build-cygwin --skip-build-osx --skip-build-ios --skip-build-tvos --skip-build-watchos --skip-build-android --skip-build-benchmarks
 OPTIONS_RELEASE=-R
 OPTIONS_SWIFTPM=--swiftpm --llbuild --xctest
@@ -17,23 +18,34 @@ OPTIONS_XCODE=-x --skip-build
 OPTIONS_REPOS_UPDATE=--clone-with-ssh
 OPTIONS_REPOS_RESET=--clone-with-ssh --reset-to-remote --scheme=master
 
+STASH_FIND=${SWIFTSOURCE}/* -maxdepth 0 -path "${SWIFTSOURCE}/build" -prune -o -type d
+
 ifeq ($(shell uname -s), Darwin)
 TIMEBIN=/usr/bin/time
 else
 TIMEBIN=/usr/bin/time -f "\n\nTime: %E ([h:]m:s)\nUser: %U s\nSystem: %S s\nElapsed: %E s\nCPU %P\nPagefaults: major %F + minor %R\nSwaps: %W\n"
 endif
 
+all:
+	${BUILDSCRIPT} ${OPTIONS_LIBS} ${OPTIONS_DEBUG}
+
 swift:
 	${BUILDSCRIPT} ${OPTIONS_DEBUG}
 
 clean:
+	${BUILDSCRIPT} ${OPTIONS_LIBS} ${OPTIONS_DEBUG} -c
+
+clean-swift:
 	${BUILDSCRIPT} ${OPTIONS_DEBUG} -c
 
 test:
 	${BUILDSCRIPT} ${OPTIONS_DEBUG} -t
 	
+test-all:
+	${BUILDSCRIPT} ${OPTIONS_LIBS} ${OPTIONS_DEBUG} -t
+	
 release:
-	${BUILDSCRIPT} ${OPTIONS_RELEASE} -t
+	${BUILDSCRIPT} ${OPTIONS_LIBS} ${OPTIONS_RELEASE} -t
 
 xcode:
 	${BUILDSCRIPT} ${OPTIONS_XCODE}
@@ -75,4 +87,10 @@ swiftpm-distribute:
 
 document:
 	make -C ${SWIFT_DOCDIR} singlehtml
+
+stash:
+	@find ${STASH_FIND} -exec git -C {} stash \;
+
+stash-pop:
+	@find ${STASH_FIND} -exec git -C {} stash pop \;
 
