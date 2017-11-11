@@ -1,15 +1,16 @@
-SWIFTSOURCE=../swift-source
+SWIFTSOURCE=${CURDIR}/swift-source
 TOOLCHAIN_NAME=jp.ez-net.local.swift
 TOOLCHAIN_DIST=./toolchains
 LINUXSWIFT=swift-nightly-install
-DIST_DEBUG=~/Swift/swift-source/build/Ninja-DebugAssert
+DIST_DEBUG=${SWIFTSOURCE}/build/Ninja-DebugAssert
 SWIFT_DIST_DEBUG=${DIST_DEBUG}/swift-linux-x86_64/bin
 SWIFTPM_DIST_DEBUG=${DIST_DEBUG}/swiftpm-linux-x86_64/debug
 SWIFT_DOCDIR=${SWIFTSOURCE}/swift/docs
 
-BUILDSCRIPT=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-script
-UPDATESCRIPT=${SWIFTSOURCE}/swift/utils/update-checkout
-BUILDTOOLCHAIN=${TIMEBIN} ${SWIFTSOURCE}/swift/utils/build-toolchain
+BUILDROOT=${SWIFTSOURCE}
+BUILDSCRIPT=${TIMEBIN} ./swift/utils/build-script
+UPDATESCRIPT=./swift/utils/update-checkout
+BUILDTOOLCHAIN=${TIMEBIN} ./swift-source/swift/utils/build-toolchain
 OPTIONS_DEBUG=--debug-swift --debug-llvm --debug-lldb --debug-foundation --debug-libdispatch --debug-libicu --skip-ios --skip-tvos --skip-watchos --skip-build-freebsd --skip-build-cygwin --skip-build-osx --skip-build-ios --skip-build-tvos --skip-build-watchos --skip-build-android --skip-build-benchmarks
 OPTIONS_RELEASE=-R
 OPTIONS_SWIFTPM=--swiftpm --llbuild --xctest
@@ -45,6 +46,7 @@ repositories-reset:
 	${UPDATESCRIPT} ${OPTIONS_REPOS_RESET}
 
 toolchain:
+	cd ${BUILDROOT}
 	${BUILDTOOLCHAIN} ${TOOLCHAIN_NAME}
 	make toolchain-move
 
@@ -74,7 +76,9 @@ swiftpm-distribute:
 	ln -fs ${SWIFTPM_DIST_DEBUG}/../.bootstrap/lib/swift/pm ${SWIFT_DIST_DEBUG}/../lib/swift
 
 document:
+	pushd ${BUILDROOT}
 	make -C ${SWIFT_DOCDIR} singlehtml
+	popd
 
 swift-init:
 	./scripts/swift-init.sh "${SWIFTSOURCE}"
